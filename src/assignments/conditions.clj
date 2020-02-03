@@ -1,4 +1,5 @@
-(ns assignments.conditions)
+(ns assignments.conditions
+  (:require [assignments.util :as u]))
 
 (defn safe-divide
   "Returns the result of x/y unless y is 0. Returns nil when y is 0"
@@ -62,8 +63,12 @@
   {:level        :medium
    :use          '[condp filter]
    :alternates   '[if cond]
-   :implemented? false}
-  [coll])
+   :implemented? true}
+  [coll] (condp u/is-sequence-present-once coll
+           [1 3] :wonder-woman
+           [:a :b :c] :durga
+           [[2 3] [4 5]] :cleopatra
+           :tuntun))
 
 (defn repeat-and-truncate
   "Given coll and options to repeat and truncate
@@ -72,10 +77,11 @@
   (repeat-and-truncate (range 4) true true 6) => '(0 1 2 3 0 1)"
   {:level        :medium
    :use          '[cond->> concat take]
-   :implemented? false}
+   :implemented? true}
   [coll rep? truncate? n] (cond->> coll
-                                   rep? (concat (flatten (repeat coll)))
-                                   (and n truncate?) (take n)))
+                                   rep? (cycle)
+                                   truncate? (drop-last n)
+                                   :else (take n)))
 
 (defn order-in-words
   "Given x, y and z, returns a vector consisting of
@@ -85,12 +91,11 @@
   (order-in-words 2 3 4) => [:z-greater-than-x]"
   {:level        :easy
    :use          '[cond-> conj]
-   :implemented? false}
+   :implemented? true}
   [x y z] (cond-> []
                   (> x y) (conj :x-greater-than-y)
                   (> y z) (conj :y-greater-than-z)
-                  (> z x) (conj :z-greater-than-x))
-  )
+                  (> z x) (conj :z-greater-than-x)))
 
 (defn zero-aliases
   "Given a zero-like value(0,[],(),#{},{}) should
@@ -104,16 +109,14 @@
   \"\"  -> :empty-string"
   {:level        :easy
    :use          '[case]
-   :implemented? false}
+   :implemented? true}
   [zero-like-value] (case zero-like-value
                       0 :zero
                       [] :empty
                       #{} :empty-set
                       {} :empty-map
                       "" :empty-string
-                      :not-zero
-                      )
-  )
+                      :not-zero))
 
 (defn zero-separated-palindrome
   "Given a sequence of numbers, increment the list
@@ -122,7 +125,8 @@
   [1 2 3] -> (4 3 2 0 2 3 4)"
   {:level        :easy
    :use          '[as-> reverse]
-   :implemented? false}
+   :implemented? true}
   [coll]
-  (as-> coll result (map inc result) (concat result (list 0) (reverse result)))
-  )
+  (as-> coll result
+        (if (every? (partial instance? Number) result) (map inc result) result)
+        (concat (reverse result) (list 0) result)))
