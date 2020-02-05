@@ -16,10 +16,5 @@
 
 (defn divisible-by? [dividend divisor] (= 0 (mod dividend divisor)))
 
-(defn is-sequence-present-once [supercoll subcoll]
-  (if (or
-        (empty? (filter (into #{} subcoll) supercoll))
-        (not= subcoll (filter (into #{} subcoll) supercoll)))
-    false
-    true
-    ))
+(defn is-sequence-present-once [subcoll supercoll]
+    (= subcoll (filter (into #{} subcoll) supercoll)))
